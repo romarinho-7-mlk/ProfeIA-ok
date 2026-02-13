@@ -6,7 +6,7 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (process.env as any).GEMIN
 if (!apiKey) console.warn("ALERTA: VITE_GEMINI_API_KEY não configurada!");
 
 const ai = new GoogleGenAI({ apiKey });
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_MODEL = 'gemini-1.5-flash';
 
 
 export interface BNCCSuggestion {
