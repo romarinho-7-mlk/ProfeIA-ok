@@ -79,7 +79,7 @@ export const exportToPPTX = async (content: string, themeLabel: string | undefin
         // If we have bullet points pending, add them before the image
         if (bulletPoints.length > 0) {
           slide.addText(bulletPoints.map(t => ({ text: t, options: { breakLine: true } })), {
-            x: 0.5, y: yPos, w: '55%', h: 'auto',
+            x: 0.5, y: yPos, w: '55%', h: 0.5,
             fontSize: 18,
             color: textColor,
             bullet: true,
@@ -112,7 +112,7 @@ export const exportToPPTX = async (content: string, themeLabel: string | undefin
         // For simplicity, add as separate text box if bullets exist
         if (bulletPoints.length > 0) {
           slide.addText(bulletPoints.map(t => ({ text: t, options: { breakLine: true } })), {
-            x: 0.5, y: yPos, w: '90%', h: 'auto',
+            x: 0.5, y: yPos, w: '90%', h: 0.5,
             fontSize: 18,
             color: textColor,
             bullet: true,
@@ -135,7 +135,7 @@ export const exportToPPTX = async (content: string, themeLabel: string | undefin
     // Flush remaining bullets
     if (bulletPoints.length > 0) {
       slide.addText(bulletPoints.map(t => ({ text: t, options: { breakLine: true } })), {
-        x: 0.5, y: yPos, w: '90%', h: 'auto',
+        x: 0.5, y: yPos, w: '90%', h: 0.5,
         fontSize: 18,
         color: textColor,
         bullet: true,
@@ -147,8 +147,7 @@ export const exportToPPTX = async (content: string, themeLabel: string | undefin
     slide.addText('ProfeIA', {
       x: 0.5, y: '90%', w: '20%', h: 0.3,
       fontSize: 10,
-      color: textColor,
-      opacity: 0.5
+      color: textColor
     });
   });
 

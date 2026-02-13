@@ -1,117 +1,117 @@
 import React, { useState } from 'react';
-import { supabase } from '../services/supabaseClient';
+import { supabase } from '../supabaseClient';
 import { Mail, Lock, UserPlus, LogIn, Loader2, BookOpen } from 'lucide-react';
 
 interface AuthProps {
-    onSession: (session: any) => void;
+  onSession: (session: any) => void;
 }
 
 export const Auth: React.FC<AuthProps> = ({ onSession }) => {
-    const [loading, setLoading] = useState(false);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isSignUp, setIsSignUp] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-    const handleAuth = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        setMessage(null);
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setMessage(null);
 
-        try {
-            if (isSignUp) {
-                const { data, error: signUpError } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
-                if (signUpError) throw signUpError;
-                setMessage('Verifique seu e-mail para confirmar o cadastro!');
-            } else {
-                const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (signInError) throw signInError;
-                if (data.session) {
-                    onSession(data.session);
-                }
-            }
-        } catch (err: any) {
-            setError(err.message || 'Ocorreu um erro inesperado.');
-        } finally {
-            setLoading(false);
+    try {
+      if (isSignUp) {
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (signUpError) throw signUpError;
+        setMessage('Verifique seu e-mail para confirmar o cadastro!');
+      } else {
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (signInError) throw signInError;
+        if (data.session) {
+          onSession(data.session);
         }
-    };
+      }
+    } catch (err: any) {
+      setError(err.message || 'Ocorreu um erro inesperado.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <div className="auth-header">
-                    <div className="auth-logo">
-                        <BookOpen size={40} className="logo-icon" />
-                    </div>
-                    <h1>ProfeIA</h1>
-                    <p>{isSignUp ? 'Crie sua conta para começar' : 'Bem-vindo de volta'}</p>
-                </div>
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <div className="auth-logo">
+            <BookOpen size={40} className="logo-icon" />
+          </div>
+          <h1>ProfeIA</h1>
+          <p>{isSignUp ? 'Crie sua conta para começar' : 'Bem-vindo de volta'}</p>
+        </div>
 
-                <form onSubmit={handleAuth} className="auth-form">
-                    <div className="input-group">
-                        <Mail className="input-icon" size={20} />
-                        <input
-                            type="email"
-                            placeholder="Seu e-mail"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+        <form onSubmit={handleAuth} className="auth-form">
+          <div className="input-group">
+            <Mail className="input-icon" size={20} />
+            <input
+              type="email"
+              placeholder="Seu e-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-                    <div className="input-group">
-                        <Lock className="input-icon" size={20} />
-                        <input
-                            type="password"
-                            placeholder="Sua senha"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+          <div className="input-group">
+            <Lock className="input-icon" size={20} />
+            <input
+              type="password"
+              placeholder="Sua senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-                    {error && <div className="auth-error">{error}</div>}
-                    {message && <div className="auth-success">{message}</div>}
+          {error && <div className="auth-error">{error}</div>}
+          {message && <div className="auth-success">{message}</div>}
 
-                    <button type="submit" disabled={loading} className="auth-button">
-                        {loading ? (
-                            <Loader2 className="animate-spin" size={20} />
-                        ) : isSignUp ? (
-                            <>
-                                <UserPlus size={20} />
-                                <span>Cadastrar</span>
-                            </>
-                        ) : (
-                            <>
-                                <LogIn size={20} />
-                                <span>Entrar</span>
-                            </>
-                        )}
-                    </button>
-                </form>
+          <button type="submit" disabled={loading} className="auth-button">
+            {loading ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : isSignUp ? (
+              <>
+                <UserPlus size={20} />
+                <span>Cadastrar</span>
+              </>
+            ) : (
+              <>
+                <LogIn size={20} />
+                <span>Entrar</span>
+              </>
+            )}
+          </button>
+        </form>
 
-                <div className="auth-footer">
-                    <button
-                        onClick={() => setIsSignUp(!isSignUp)}
-                        className="toggle-auth"
-                    >
-                        {isSignUp
-                            ? 'Já tem uma conta? Entre aqui'
-                            : 'Não tem uma conta? Cadastre-se'}
-                    </button>
-                </div>
-            </div>
+        <div className="auth-footer">
+          <button
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="toggle-auth"
+          >
+            {isSignUp
+              ? 'Já tem uma conta? Entre aqui'
+              : 'Não tem uma conta? Cadastre-se'}
+          </button>
+        </div>
+      </div>
 
-            <style>{`
+      <style>{`
         .auth-container {
           min-height: 100vh;
           display: flex;
@@ -294,6 +294,6 @@ export const Auth: React.FC<AuthProps> = ({ onSession }) => {
           to { transform: rotate(360deg); }
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 };
