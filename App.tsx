@@ -31,9 +31,19 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
+    // Check if Supabase is properly configured
+    if (!supabase) {
+      setError('Configuração do Supabase não encontrada. Verifique as variáveis de ambiente VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.');
+      setIsAuthLoading(false);
+      return;
+    }
+
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setIsAuthLoading(false);
+    }).catch(err => {
+      console.error("Session check failed", err);
       setIsAuthLoading(false);
     });
 
