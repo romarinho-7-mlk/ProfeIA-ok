@@ -1,12 +1,21 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratorFormData, ContentType, TeacherProfile, CrosswordWord } from "./types";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (process.env as any).GEMINI_API_KEY || "";
-if (!apiKey) console.warn("ALERTA: VITE_GEMINI_API_KEY não configurada!");
+// Helper: call our serverless API proxy
+async function callGeminiAPI(contents: any, config?: any): Promise<{ text: string; images: Array<{ mimeType: string; data: string }> }> {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents, config }),
+  });
 
-const ai = new GoogleGenAI({ apiKey });
-const DEFAULT_MODEL = 'gemini-1.5-flash';
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+    throw new Error(errorData.error || `Erro HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
 
 
 export interface BNCCSuggestion {
@@ -17,18 +26,10 @@ export interface BNCCSuggestion {
 // Helper function to generate an image from a prompt
 export async function generateImageFromPrompt(prompt: string): Promise<string | null> {
   try {
-    const response = await ai.models.generateContent({
-      model: DEFAULT_MODEL,
+    const result = await callGeminiAPI(prompt);
 
-      contents: prompt,
-    });
-
-    if (response.candidates?.[0]?.content?.parts) {
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData) {
-          return `data:image/png;base64,${part.inlineData.data}`;
-        }
-      }
+    if (result.images && result.images.length > 0) {
+      return `data:image/png;base64,${result.images[0].data}`;
     }
     return null;
   } catch (error) {
@@ -49,28 +50,25 @@ export const getBNCCSuggestions = async (subject: string, gradeLevel: string, to
   `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: DEFAULT_MODEL,
-
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              code: { type: Type.STRING },
-              description: { type: Type.STRING }
-            },
-            required: ['code', 'description']
-          }
+    const config = {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            code: { type: 'STRING' },
+            description: { type: 'STRING' }
+          },
+          required: ['code', 'description']
         }
       }
-    });
+    };
 
-    if (response.text) {
-      return JSON.parse(response.text) as BNCCSuggestion[];
+    const result = await callGeminiAPI(prompt, config);
+
+    if (result.text) {
+      return JSON.parse(result.text) as BNCCSuggestion[];
     }
     return [];
   } catch (error) {
@@ -96,28 +94,25 @@ export const getCrosswordSuggestions = async (subject: string, gradeLevel: strin
     `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: DEFAULT_MODEL,
-
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              word: { type: Type.STRING, description: "A palavra da cruzadinha" },
-              clue: { type: Type.STRING, description: "A dica para descobrir a palavra" }
-            },
-            required: ['word', 'clue']
-          }
+    const config = {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            word: { type: 'STRING', description: "A palavra da cruzadinha" },
+            clue: { type: 'STRING', description: "A dica para descobrir a palavra" }
+          },
+          required: ['word', 'clue']
         }
       }
-    });
+    };
 
-    if (response.text) {
-      return JSON.parse(response.text) as CrosswordWord[];
+    const result = await callGeminiAPI(prompt, config);
+
+    if (result.text) {
+      return JSON.parse(result.text) as CrosswordWord[];
     }
     return [];
   } catch (error) {
@@ -134,27 +129,11 @@ export const generateEducationalContent = async (formData: GeneratorFormData, te
     const imagePrompt = `Crie uma imagem educacional estilo ${imageStyle || 'realista'} sobre ${topic} para uma aula de ${subject} do nível ${gradeLevel}. ${additionalDetails ? `Detalhes adicionais: ${additionalDetails}` : ''}`;
 
     try {
-      // Using gemini-2.5-flash-image as per guidelines for image generation
-      const response = await ai.models.generateContent({
-        model: DEFAULT_MODEL,
+      const result = await callGeminiAPI(imagePrompt);
 
-
-        contents: imagePrompt,
-        config: {
-          // Note: responseMimeType is not supported for nano banana models
-        }
-      });
-
-      // Iterate through parts to find the image
       let imageUrl = '';
-      if (response.candidates?.[0]?.content?.parts) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.inlineData) {
-            const base64EncodeString = part.inlineData.data;
-            imageUrl = `data:image/png;base64,${base64EncodeString}`;
-            break;
-          }
-        }
+      if (result.images && result.images.length > 0) {
+        imageUrl = `data:image/png;base64,${result.images[0].data}`;
       }
 
       if (imageUrl) {
@@ -360,18 +339,15 @@ export const generateEducationalContent = async (formData: GeneratorFormData, te
   }
 
   try {
-    const response = await ai.models.generateContent({
-      model: DEFAULT_MODEL,
+    const config = {
+      temperature: 0.7,
+      topP: 0.8,
+      topK: 40,
+    };
 
-      contents: contentsPayload,
-      config: {
-        temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-      }
-    });
+    const result = await callGeminiAPI(contentsPayload, config);
 
-    let generatedText = response.text || "Não foi possível gerar o conteúdo. Tente novamente.";
+    let generatedText = result.text || "Não foi possível gerar o conteúdo. Tente novamente.";
 
     // Post-processing: Replace IMAGE_PROMPT markers
     if (contentType === ContentType.SLIDES && generatedText.includes('[IMAGE_PROMPT:')) {
@@ -398,10 +374,6 @@ export const generateEducationalContent = async (formData: GeneratorFormData, te
 
   } catch (error: any) {
     console.error("ERRO DETALHADO NA IA:", error);
-    // If it's a "model not found" error, maybe log it clearly
-    if (error.message?.includes('not found')) {
-      console.error(`O modelo ${DEFAULT_MODEL} pode não estar disponível para esta chave.`);
-    }
     throw new Error(`Falha na IA (${error.message || 'Erro desconhecido'})`);
   }
 };
