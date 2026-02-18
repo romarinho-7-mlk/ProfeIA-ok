@@ -9,6 +9,7 @@ import { generateEducationalContent } from './geminiService';
 import { GeneratorFormData, ContentType, TeacherProfile } from './types';
 import { supabase } from './supabaseClient';
 import { Auth } from './components/Auth';
+import { LandingPage } from './components/LandingPage';
 import { LogOut } from 'lucide-react';
 
 
@@ -21,6 +22,7 @@ const App: React.FC = () => {
   const [selectedContentType, setSelectedContentType] = useState<ContentType>(ContentType.ACTIVITY);
   const [session, setSession] = useState<any>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
 
 
   // Teacher Profile State with LocalStorage Persistence
@@ -119,7 +121,20 @@ const App: React.FC = () => {
   }
 
   if (!session) {
-    return <Auth onSession={(s) => setSession(s)} />;
+    if (showAuth) {
+      return (
+        <Auth
+          onSession={(s) => setSession(s)}
+          onBack={() => setShowAuth(false)}
+        />
+      );
+    }
+    return (
+      <LandingPage
+        onStart={() => setShowAuth(true)}
+        onLogin={() => setShowAuth(true)}
+      />
+    );
   }
 
   return (

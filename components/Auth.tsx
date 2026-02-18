@@ -4,9 +4,10 @@ import { Mail, Lock, UserPlus, LogIn, Loader2, BookOpen } from 'lucide-react';
 
 interface AuthProps {
   onSession: (session: any) => void;
+  onBack?: () => void;
 }
 
-export const Auth: React.FC<AuthProps> = ({ onSession }) => {
+export const Auth: React.FC<AuthProps> = ({ onSession, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,6 +59,11 @@ export const Auth: React.FC<AuthProps> = ({ onSession }) => {
           </div>
           <h1>ProfeIA</h1>
           <p>{isSignUp ? 'Crie sua conta para começar' : 'Bem-vindo de volta'}</p>
+          {onBack && (
+            <button onClick={onBack} className="auth-back-btn">
+              &larr; Voltar para o início
+            </button>
+          )}
         </div>
 
         <form onSubmit={handleAuth} className="auth-form">
@@ -287,6 +293,20 @@ export const Auth: React.FC<AuthProps> = ({ onSession }) => {
         .toggle-auth:hover {
           color: #2563eb;
           text-decoration: underline;
+        }
+
+        .auth-back-btn {
+          margin-top: 12px;
+          background: none;
+          border: none;
+          color: #94a3b8;
+          font-size: 13px;
+          cursor: pointer;
+          transition: color 0.3s;
+        }
+
+        .auth-back-btn:hover {
+          color: #2563eb;
         }
 
         .animate-spin {
