@@ -21,6 +21,10 @@ export const Auth: React.FC<AuthProps> = ({ onSession }) => {
     setMessage(null);
 
     try {
+      if (!supabase) {
+        throw new Error('Supabase não inicializado. Verifique as configurações (VITE_SUPABASE_URL/KEY).');
+      }
+
       if (isSignUp) {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
