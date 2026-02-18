@@ -2,11 +2,11 @@
 import { GeneratorFormData, ContentType, TeacherProfile, CrosswordWord } from "./types";
 
 // Helper: call our serverless API proxy
-async function callGeminiAPI(contents: any, config?: any): Promise<{ text: string; images: Array<{ mimeType: string; data: string }> }> {
+async function callGeminiAPI(contents: any, config?: any, provider?: 'gemini' | 'groq'): Promise<{ text: string; images: Array<{ mimeType: string; data: string }> }> {
   const response = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents, config }),
+    body: JSON.stringify({ contents, config, provider }),
   });
 
   if (!response.ok) {
