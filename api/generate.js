@@ -14,6 +14,8 @@ export default async function handler(req, res) {
 
     const { contents, config, provider } = req.body;
 
+    console.log(`[API] Provider: ${provider || 'gemini'} | Has Gemini Key: ${!!geminiKey} | Has Groq Key: ${!!groqKey}`);
+
     if (!contents) {
         return res.status(400).json({ error: "Campo 'contents' é obrigatório." });
     }
@@ -21,19 +23,25 @@ export default async function handler(req, res) {
     // Handle Groq Provider
     if (provider === "groq") {
         if (!groqKey) {
-            return res.status(500).json({ error: "GROQ_API_KEY não configurada no servidor." });
+            return res.status(500).json({ error: "GROQ_API_KEY não configurada no servidor Vercel. Adicione-a nas configurações." });
         }
 
         try {
-            // Convert contents to string if it's an object (like Gemini structure)
             let prompt = "";
             if (typeof contents === "string") {
                 prompt = contents;
             } else if (contents.parts) {
-                prompt = contents.parts.map(p => p.text).filter(Boolean).join("\n");
+                // Better extraction for Groq (skipping non-text parts like PDF/Images for now)
+                prompt = contents.parts
+                    .map(p => p.text)
+                    .filter(Boolean)
+                    .join("\n");
             } else if (Array.isArray(contents)) {
-                // Handle complex Gemini array if needed
                 prompt = JSON.stringify(contents);
+            }
+
+            if (!prompt) {
+                throw new Error("O conteúdo enviado é incompatível com o Groq (provavelmente um arquivo PDF ou imagem que o Groq não consegue ler diretamente).");
             }
 
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -46,19 +54,20 @@ export default async function handler(req, res) {
                     model: GROQ_MODEL,
                     messages: [{ role: "user", content: prompt }],
                     temperature: config?.temperature || 0.7,
-                    top_p: config?.topP || 0.8,
+                    max_tokens: 4000
                 })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || `Groq API error: ${response.status}`);
+                console.error("Erro detalhado Groq:", data);
+                throw new Error(data.error?.message || `Erro na API Groq (${response.status})`);
             }
 
-            const data = await response.json();
             const text = data.choices?.[0]?.message?.content || "";
-
             return res.status(200).json({ text, images: [] });
+
         } catch (error) {
             console.error("Erro na API Groq:", error);
             return res.status(500).json({
@@ -69,9 +78,7 @@ export default async function handler(req, res) {
 
     // Default: Gemini Provider
     if (!geminiKey) {
-        return res
-            .status(500)
-            .json({ error: "GEMINI_API_KEY não configurada no servidor." });
+        return res.status(500).json({ error: "GEMINI_API_KEY não configurada no servidor Vercel. Adicione-a nas configurações." });
     }
 
     try {
@@ -82,8 +89,6 @@ export default async function handler(req, res) {
         });
 
         const text = response.text || "";
-
-        // Check for inline image data
         let images = [];
         if (response.candidates?.[0]?.content?.parts) {
             for (const part of response.candidates[0].content.parts) {
