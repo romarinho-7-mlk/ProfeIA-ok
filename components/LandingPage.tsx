@@ -22,6 +22,31 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) => {
+  const [isPaying, setIsPaying] = React.useState<string | null>(null);
+
+  const handlePayment = async (planName: string, planPrice: string) => {
+    try {
+      setIsPaying(planName);
+      const response = await fetch('/api/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planName, planPrice }),
+      });
+
+      const data = await response.json();
+      if (data.initPoint) {
+        window.location.href = data.initPoint;
+      } else {
+        alert('Erro ao iniciar pagamento: ' + (data.error || 'Tente novamente.'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Erro de conexão ao tentar assinar.');
+    } finally {
+      setIsPaying(null);
+    }
+  };
+
   return (
     <div className="landing-container">
       {/* Header/Nav */}
@@ -118,16 +143,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
             name="Pro"
             price="29"
             isPopular
+            isLoading={isPaying === 'Pro'}
             features={['Gerações ilimitadas', 'Acesso ao Groq (Ultra rápido)', 'Gerador de Slides', 'Exportação para PDF']}
             buttonText="Assinar"
-            onAction={onStart}
+            onAction={() => handlePayment('Pro', '29')}
           />
           <PlanCard
             name="Elite"
             price="89"
+            isLoading={isPaying === 'Elite'}
             features={['Tudo do Pro', 'Marca do Professor', 'Suporte Prioritário', 'Análise de PDFs ilimitada']}
             buttonText="Assinar"
-            onAction={onStart}
+            onAction={() => handlePayment('Elite', '89')}
           />
         </div>
       </section>
@@ -547,7 +574,7 @@ const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, titl
   </div>
 );
 
-const PlanCard = ({ name, price, features, isPopular, buttonText, onAction }: any) => (
+const PlanCard = ({ name, price, features, isPopular, buttonText, onAction, isLoading }: any) => (
   <div className={`plan-card ${isPopular ? 'popular' : ''}`}>
     {isPopular && <div className="popular-badge">Mais Popular</div>}
     <h3 className="plan-name">{name}</h3>
@@ -560,8 +587,13 @@ const PlanCard = ({ name, price, features, isPopular, buttonText, onAction }: an
         </li>
       ))}
     </ul>
-    <button onClick={onAction} className={`plan-btn ${isPopular ? '' : 'btn-outline'}`}>
-      {buttonText}
+    <button
+      onClick={onAction}
+      disabled={isLoading}
+      className={`plan-btn ${isPopular ? '' : 'btn-outline'}`}
+      style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}
+    >
+      {isLoading ? 'Processando...' : buttonText}
     </button>
   </div>
 );
