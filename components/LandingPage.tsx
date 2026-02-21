@@ -179,8 +179,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         .landing-container {
-          background: #0a0a0b;
-          color: white;
+          background-color: #ffffff !important;
+          color: #0f172a !important;
           min-height: 100vh;
           font-family: 'Plus Jakarta Sans', sans-serif;
           overflow-x: hidden;
@@ -192,9 +192,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           position: sticky;
           top: 0;
           z-index: 100;
-          background: rgba(10, 10, 11, 0.8);
+          background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid rgba(15, 23, 42, 0.08);
         }
 
         .nav-content {
@@ -213,6 +213,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           font-weight: 800;
           font-size: 22px;
           letter-spacing: -0.5px;
+          color: #0f172a;
         }
 
         .logo-icon-bg {
@@ -238,13 +239,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         .btn-text {
           background: none;
           border: none;
-          color: #94a3b8;
+          color: #64748b;
           font-weight: 600;
           cursor: pointer;
           transition: color 0.3s;
         }
 
-        .btn-text:hover { color: white; }
+        .btn-text:hover { color: #0f172a; }
 
         .btn-primary-small {
           background: linear-gradient(135deg, #2563eb, #06b6d4);
@@ -275,14 +276,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         }
 
         .hero-badge {
-          background: rgba(37, 99, 235, 0.1);
-          color: #3b82f6;
+          background: rgba(37, 99, 235, 0.08);
+          color: #2563eb;
           padding: 8px 16px;
           border-radius: 100px;
           font-size: 13px;
           font-weight: 700;
           margin-bottom: 24px;
-          border: 1px solid rgba(37, 99, 235, 0.2);
+          border: 1px solid rgba(255, 255, 255, 1);
+          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .hero-title {
@@ -291,6 +293,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           line-height: 1.1;
           letter-spacing: -2px;
           margin-bottom: 32px;
+          color: #0f172a;
         }
 
         .highlight {
@@ -303,7 +306,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
 
         .hero-subtitle {
           font-size: clamp(16px, 2vw, 20px);
-          color: #94a3b8;
+          color: #475569;
           max-width: 700px;
           line-height: 1.6;
           margin-bottom: 48px;
@@ -337,9 +340,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         }
 
         .btn-secondary {
-          background: rgba(255,255,255,0.05);
-          color: white;
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #f1f5f9;
+          color: #0f172a;
+          border: 1px solid #e2e8f0;
           padding: 18px 36px;
           border-radius: 16px;
           font-weight: 800;
@@ -349,8 +352,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         }
 
         .btn-secondary:hover {
-          background: rgba(255,255,255,0.1);
-          border-color: rgba(37, 99, 235, 0.4);
+          background: #e2e8f0;
+          border-color: #cbd5e1;
         }
 
         /* Sections General */
@@ -370,10 +373,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           font-weight: 800;
           margin-bottom: 16px;
           letter-spacing: -1px;
+          color: #0f172a;
         }
 
         .section-header p {
-          color: #94a3b8;
+          color: #475569;
           font-size: 18px;
         }
 
@@ -385,19 +389,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         }
 
         .feature-card {
-          background: #121214;
-          border: 1px solid rgba(255,255,255,0.05);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           padding: 40px;
           border-radius: 24px;
           transition: all 0.3s;
           position: relative;
           overflow: hidden;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .feature-card:hover {
           border-color: rgba(37, 99, 235, 0.3);
           transform: translateY(-8px);
-          background: #161618;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
         .feature-icon {
@@ -409,10 +414,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           font-size: 20px;
           font-weight: 700;
           margin-bottom: 12px;
+          color: #1e293b;
         }
 
         .feature-card p {
-          color: #94a3b8;
+          color: #64748b;
           line-height: 1.6;
           font-size: 15px;
         }
@@ -425,20 +431,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
         }
 
         .plan-card {
-          background: #121214;
-          border: 1px solid rgba(255,255,255,0.05);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           padding: 48px;
           border-radius: 32px;
           display: flex;
           flex-direction: column;
           transition: all 0.3s;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .plan-card.popular {
           border-color: #2563eb;
-          background: rgba(37, 99, 235, 0.02);
+          background: #ffffff;
           transform: scale(1.05);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.15);
         }
 
         .popular-badge {
@@ -457,12 +464,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           font-size: 24px;
           font-weight: 800;
           margin-bottom: 8px;
+          color: #0f172a;
         }
 
         .plan-price {
           font-size: 48px;
           font-weight: 800;
           margin-bottom: 32px;
+          color: #0f172a;
         }
 
         .plan-price span {
@@ -482,7 +491,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           display: flex;
           align-items: center;
           gap: 12px;
-          color: #cbd5e1;
+          color: #475569;
           margin-bottom: 16px;
           font-size: 15px;
         }
@@ -505,13 +514,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
 
         .btn-outline {
           background: transparent;
-          border: 1px solid rgba(255,255,255,0.1);
-          color: white;
+          border: 1px solid #e2e8f0;
+          color: #0f172a;
         }
 
         .btn-outline:hover {
-          background: rgba(255,255,255,0.05);
-          border-color: white;
+          background: #f8fafc;
+          border-color: #cbd5e1;
         }
 
         .plan-card.popular .plan-btn {
@@ -521,9 +530,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
 
         /* Footer */
         .landing-footer {
-          border-top: 1px solid rgba(255,255,255,0.05);
+          border-top: 1px solid #e2e8f0;
           padding: 60px 0;
-          background: #070708;
+          background: #f8fafc;
         }
 
         .footer-content {
@@ -541,6 +550,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onLogin }) =>
           gap: 8px;
           font-weight: 800;
           margin-bottom: 8px;
+          color: #0f172a;
         }
 
         .footer-brand p {
